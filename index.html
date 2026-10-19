@@ -9,120 +9,274 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{min-height:100%}
   body{
-    font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:#fff;overflow-x:hidden;position:relative;
-    min-height:100vh;
-    background:linear-gradient(135deg,#12041f,#2b0a52,#4a1a8c,#1d2f7a,#5a1a6e,#12041f);
-    background-size:400% 400%;animation:bgshift 18s ease infinite;
+    font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:#fff;overflow-x:hidden;position:relative;min-height:100vh;
+    background:linear-gradient(135deg,#0a1030,#14224f,#1d2f6e,#2a2a6a,#0a1030);
+    background-size:400% 400%;animation:bgshift 25s ease infinite;
   }
   @keyframes bgshift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-  /* glowing blobs */
-  .blob{position:fixed;border-radius:50%;filter:blur(90px);opacity:.45;pointer-events:none;z-index:0}
-  .b1{width:420px;height:420px;background:#ff4fd8;top:-100px;left:-80px;animation:drift1 14s ease-in-out infinite}
-  .b2{width:480px;height:480px;background:#2fe0d0;bottom:-140px;right:-100px;animation:drift2 17s ease-in-out infinite}
-  .b3{width:320px;height:320px;background:#6a5cff;top:40%;left:45%;animation:drift3 20s ease-in-out infinite}
-  @keyframes drift1{50%{transform:translate(160px,120px) scale(1.2)}}
-  @keyframes drift2{50%{transform:translate(-180px,-100px) scale(1.15)}}
-  @keyframes drift3{50%{transform:translate(-120px,90px) scale(.8)}}
+  /* tiny twinkling stars */
+  #stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .star{position:absolute;border-radius:50%;background:#dcd6ff;opacity:.2;animation:twinkle ease-in-out infinite}
+  @keyframes twinkle{50%{opacity:.9}}
+  .shoot{position:fixed;width:80px;height:2px;z-index:0;pointer-events:none;
+    background:linear-gradient(90deg,transparent,#fff);opacity:0}
 
-  /* floating dots */
-  #dots{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-  .dot{position:absolute;bottom:-20px;border-radius:50%;opacity:0;animation:floatup linear infinite}
-  @keyframes floatup{
-    0%{transform:translate(0,0);opacity:0}
-    10%{opacity:.9}
-    90%{opacity:.9}
-    100%{transform:translate(var(--dx),-110vh);opacity:0}
-  }
+  /* cursor trail */
+  .trail{position:fixed;width:6px;height:6px;border-radius:50%;background:#c9bfff;pointer-events:none;z-index:50;
+    animation:trailfade .7s ease-out forwards}
+  @keyframes trailfade{to{opacity:0;transform:scale(.2)}}
 
-  header{position:relative;z-index:3;display:flex;align-items:center;padding:20px 32px}
-  .brand{display:flex;align-items:center;gap:16px;animation:slidedown .8s ease both}
-  .brand img{
-    width:84px;height:84px;object-fit:contain;border-radius:20px;
-    filter:drop-shadow(0 0 14px rgba(255,120,230,.7));
-    animation:logofloat 4s ease-in-out infinite,glowpulse 3s ease-in-out infinite;
-    transition:transform .5s cubic-bezier(.2,1.6,.4,1);cursor:pointer
-  }
-  .brand img:hover{transform:rotate(360deg) scale(1.2)}
-  .brand span{font-size:44px;font-weight:900;letter-spacing:2px;text-shadow:0 0 18px rgba(255,255,255,.35)}
+  header{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:20px 32px;
+    animation:slidedown .8s ease both}
+  .brand{display:flex;align-items:center;gap:16px}
+  .brand img{width:84px;height:84px;object-fit:contain;border-radius:20px;cursor:pointer;
+    filter:drop-shadow(0 0 14px rgba(170,150,255,.6));animation:logofloat 4s ease-in-out infinite;user-select:none}
+  .brand span{font-size:44px;font-weight:900;letter-spacing:2px}
+  .online{font-size:15px;font-weight:600;background:rgba(255,255,255,.1);padding:8px 14px;border-radius:999px}
   @keyframes logofloat{0%,100%{translate:0 0}50%{translate:0 -8px}}
-  @keyframes glowpulse{
-    0%,100%{filter:drop-shadow(0 0 10px rgba(255,120,230,.6))}
-    50%{filter:drop-shadow(0 0 26px rgba(109,247,228,.9))}
-  }
   @keyframes slidedown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:none}}
 
   .hero{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;
-    gap:40px;padding:20px 8vw 80px;min-height:calc(100vh - 120px);flex-wrap:wrap}
-  .text{max-width:620px}
-  h1{font-size:clamp(40px,8vw,84px);line-height:.95;font-weight:900;text-transform:uppercase;
-    letter-spacing:-1px;margin-bottom:28px;color:#fff;animation:rise .9s .15s ease both}
-  h1 span{display:inline-block;animation:wobble 3s ease-in-out infinite}
+    gap:40px;padding:20px 8vw 100px;min-height:calc(100vh - 120px);flex-wrap:wrap}
+  .text{max-width:640px}
+  h1{display:inline-block;font-size:clamp(40px,8vw,84px);line-height:.95;font-weight:900;text-transform:uppercase;
+    letter-spacing:-1px;margin-bottom:28px;min-height:2em;animation:wobble 3s ease-in-out infinite}
+  h1::after{content:"|";margin-left:4px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
   @keyframes wobble{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(-1.5deg)}}
-  p{font-size:clamp(20px,2.6vw,28px);line-height:1.4;font-weight:800;color:#f3e8ff;margin-bottom:40px;
-    animation:rise .9s .35s ease both}
-  .btn{display:inline-block;padding:18px 36px;font-size:20px;font-weight:700;color:#2b0a52;background:#fff;
-    border-radius:14px;text-decoration:none;position:relative;overflow:hidden;
-    box-shadow:0 8px 30px rgba(255,123,229,.4);animation:rise .9s .55s ease both,btnpulse 2.5s 1.5s ease-in-out infinite;
-    transition:transform .2s,box-shadow .2s}
-  .btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
-    background:linear-gradient(100deg,transparent,rgba(255,150,230,.5),transparent);transition:left .6s}
-  .btn:hover{transform:translateY(-4px) scale(1.06);box-shadow:0 14px 40px rgba(109,247,228,.55)}
-  .btn:hover::after{left:140%}
-  @keyframes btnpulse{50%{box-shadow:0 8px 44px rgba(255,123,229,.8)}}
-  @keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+  .desc{font-size:clamp(20px,2.6vw,28px);line-height:1.4;font-weight:800;color:#ece8ff;margin-bottom:12px}
+  .fun{font-size:18px;font-weight:600;color:#b9b0ff;margin-bottom:36px;min-height:26px;transition:opacity .4s}
+  .btns{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;padding:17px 34px;font-size:19px;font-weight:700;border-radius:14px;
+    text-decoration:none;cursor:pointer;border:none;font-family:inherit;animation:wobble 3.5s ease-in-out infinite}
+  .btn.main{color:#14224f;background:#fff}
+  .btn.share{color:#fff;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.35)}
 
-  /* QR */
-  .qrwrap{flex:1;display:flex;justify-content:center;min-width:260px;animation:pop 1s .5s cubic-bezier(.2,1.5,.4,1) both}
-  @keyframes pop{from{opacity:0;transform:scale(.5) rotate(-12deg)}to{opacity:1;transform:none}}
-  .qr{width:min(340px,70vw);padding:18px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
-    border:2px solid rgba(255,255,255,.35);border-radius:28px;cursor:pointer;
-    animation:qrfloat 5s ease-in-out infinite;
-    transition:transform .4s cubic-bezier(.2,1.5,.4,1),box-shadow .4s,border-color .4s}
+  .qrwrap{flex:1;display:flex;justify-content:center;min-width:260px}
+  .qr{width:min(340px,70vw);padding:18px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);
+    border-radius:28px;animation:qrfloat 5s ease-in-out infinite}
   .qr img{width:100%;display:block;border-radius:16px}
-  .qr:hover{transform:scale(1.1) rotate(4deg);border-color:#6df7e4;
-    box-shadow:0 0 50px rgba(109,247,228,.7),0 0 100px rgba(255,123,229,.5);animation-play-state:paused}
   @keyframes qrfloat{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -22px;rotate:2deg}}
+
+  /* mascot */
+  #mascot{position:fixed;left:20px;bottom:20px;z-index:20;display:flex;align-items:flex-end;gap:8px}
+  #mascot img{width:70px;height:70px;object-fit:contain;cursor:pointer;user-select:none}
+  #mascot img.blink{animation:squish .5s ease}
+  @keyframes squish{30%{transform:scale(1.15,.8)}60%{transform:scale(.9,1.12)}}
+  #bubble{background:#fff;color:#14224f;font-weight:700;font-size:15px;padding:10px 14px;border-radius:14px;
+    opacity:0;transform:translateY(8px);transition:.3s;pointer-events:none;max-width:200px}
+  #bubble.show{opacity:1;transform:none}
+
+  #music{position:fixed;right:20px;bottom:20px;z-index:20;padding:12px 18px;border-radius:999px;border:none;
+    background:rgba(255,255,255,.15);color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+
+  .conf{position:fixed;top:-20px;width:10px;height:10px;z-index:100;pointer-events:none}
+  .big-wobble{animation:bigwobble 1s ease}
+  @keyframes bigwobble{20%{transform:rotate(-4deg) scale(1.03)}40%{transform:rotate(4deg) scale(.98)}
+    60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
 </style>
 </head>
 <body>
-<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
-<div id="dots"></div>
+<div id="stars"></div>
 
 <header>
   <div class="brand">
-    <img src="Fuzzy.png" alt="Fuzzy logo" onerror="this.style.display='none'">
+    <img id="logo" src="Fuzzy.png" alt="Fuzzy logo" onerror="this.style.display='none'">
     <span>FUZZY</span>
   </div>
+  <div class="online" id="online">🟢 1,284 fuzzies online</div>
 </header>
 
 <section class="hero">
   <div class="text">
-    <h1><span>Welcome to</span><br><span style="animation-delay:.3s">Fuzzy</span></h1>
-    <p>Fuzzy is cool and shii, woohooo :OO</p>
-    <a class="btn" href="https://fuzzedd.github.io/Fuzzy">Open Fuzzy</a>
+    <h1 id="title"></h1>
+    <p class="desc">Fuzzy is cool and shii, woohooo :OO</p>
+    <p class="fun" id="fun">woohooo :OO</p>
+    <div class="btns">
+      <a class="btn main" id="open" href="https://fuzzedd.github.io/Fuzzy" target="_blank" rel="noopener noreferrer">Open Fuzzy</a>
+      <button class="btn share" id="share">Copy link</button>
+    </div>
   </div>
   <div class="qrwrap">
     <div class="qr"><img src="fuzzyQR.png" alt="Fuzzy QR code" onerror="this.parentNode.style.display='none'"></div>
   </div>
 </section>
 
+<div id="mascot">
+  <img id="mascotImg" src="Fuzzy.png" alt="Fuzzy mascot" onerror="this.style.display='none'">
+  <div id="bubble"></div>
+</div>
+<button id="music">🎵 Music: off</button>
+
+<audio id="audio" src="melody.mp3" loop></audio>
+
 <script>
-  const box = document.getElementById('dots');
-  const colors = ['#ffffff','#ff9de2','#7ffff0','#b9a7ff'];
-  for (let i = 0; i < 60; i++) {
-    const d = document.createElement('div');
-    d.className = 'dot';
-    const s = 3 + Math.random() * 8;
-    d.style.width = d.style.height = s + 'px';
-    d.style.left = Math.random() * 100 + '%';
-    d.style.background = colors[Math.floor(Math.random() * colors.length)];
-    d.style.boxShadow = '0 0 ' + (s * 2) + 'px ' + d.style.background;
-    d.style.setProperty('--dx', (Math.random() * 200 - 100) + 'px');
-    d.style.animationDuration = (8 + Math.random() * 14) + 's';
-    d.style.animationDelay = (-Math.random() * 20) + 's';
-    box.appendChild(d);
+  const SITE = 'https://fuzzedd.github.io/Fuzzy';
+  const $ = id => document.getElementById(id);
+
+  /* tiny twinkling stars */
+  const stars = $('stars');
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = 1 + Math.random() * 2;
+    s.style.width = s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.animationDuration = (2 + Math.random() * 4) + 's';
+    s.style.animationDelay = (-Math.random() * 6) + 's';
+    stars.appendChild(s);
   }
+
+  /* shooting stars */
+  function shoot() {
+    const s = document.createElement('div');
+    s.className = 'shoot';
+    s.style.top = (Math.random() * 40) + '%';
+    s.style.left = (30 + Math.random() * 60) + '%';
+    s.style.transform = 'rotate(25deg)';
+    document.body.appendChild(s);
+    s.animate([
+      {opacity: 1, transform: 'rotate(25deg) translate(0,0)'},
+      {opacity: 0, transform: 'rotate(25deg) translate(-400px,0)'}
+    ], {duration: 1000, easing: 'ease-out'}).onfinish = () => s.remove();
+    setTimeout(shoot, 6000 + Math.random() * 8000);
+  }
+  setTimeout(shoot, 3000);
+
+  /* cursor trail */
+  let lastTrail = 0;
+  document.addEventListener('mousemove', e => {
+    const now = Date.now();
+    if (now - lastTrail < 35) return;
+    lastTrail = now;
+    const t = document.createElement('div');
+    t.className = 'trail';
+    t.style.left = e.clientX - 3 + 'px';
+    t.style.top = e.clientY - 3 + 'px';
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 700);
+  });
+
+  /* typing headline */
+  const full = 'Welcome to\nFuzzy';
+  let ti = 0;
+  (function type() {
+    $('title').innerHTML = full.slice(0, ti).replace('\n', '<br>');
+    if (ti++ < full.length) setTimeout(type, 110);
+  })();
+
+  /* rotating fun line */
+  const lines = ['woohooo :OO', 'no cap, it\'s cool', 'you found the fuzzy zone', 'stay fuzzy', 'certified shii', 'fuzzy mode: ON'];
+  let li = 0;
+  setInterval(() => {
+    const f = $('fun');
+    f.style.opacity = 0;
+    setTimeout(() => { li = (li + 1) % lines.length; f.textContent = lines[li]; f.style.opacity = 1; }, 400);
+  }, 3000);
+
+  /* fake live counter */
+  let count = 1200 + Math.floor(Math.random() * 200);
+  function tick() {
+    count += Math.floor(Math.random() * 15) - 7;
+    $('online').textContent = '🟢 ' + count.toLocaleString() + ' fuzzies online';
+    setTimeout(tick, 2000 + Math.random() * 2500);
+  }
+  tick();
+
+  /* simple pop sound */
+  let ctx;
+  function pop() {
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(700, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.12);
+      g.gain.setValueAtTime(0.15, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime + 0.16);
+    } catch (e) {}
+  }
+
+  /* easter egg: click logo 5 times */
+  let clicks = 0, clickTimer;
+  $('logo').addEventListener('click', () => {
+    pop();
+    clicks++;
+    clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => clicks = 0, 1500);
+    if (clicks >= 5) { clicks = 0; party(); }
+  });
+  function party() {
+    document.body.classList.add('big-wobble');
+    setTimeout(() => document.body.classList.remove('big-wobble'), 1000);
+    const cols = ['#ff7be5', '#6df7e4', '#ffe066', '#b9a7ff', '#ffffff'];
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement('div');
+      c.className = 'conf';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = cols[i % cols.length];
+      document.body.appendChild(c);
+      c.animate([
+        {transform: 'translateY(0) rotate(0)', opacity: 1},
+        {transform: 'translateY(105vh) rotate(' + (Math.random() * 720) + 'deg)', opacity: 1}
+      ], {duration: 1800 + Math.random() * 1500, easing: 'ease-in'}).onfinish = () => c.remove();
+    }
+  }
+
+  /* mascot: blinks, click for a random line */
+  const says = ['hi hi!', 'woohooo :OO', 'you clicked me!', 'fuzzy is cool and shii', 'stay fuzzy', 'boop!'];
+  setInterval(() => {
+    const m = $('mascotImg');
+    m.classList.add('blink');
+    setTimeout(() => m.classList.remove('blink'), 500);
+  }, 4000);
+  let bubbleTimer;
+  $('mascotImg').addEventListener('click', () => {
+    pop();
+    const b = $('bubble');
+    b.textContent = says[Math.floor(Math.random() * says.length)];
+    b.classList.add('show');
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => b.classList.remove('show'), 2200);
+  });
+
+  /* copy link */
+  $('share').addEventListener('click', async () => {
+    pop();
+    try { await navigator.clipboard.writeText(SITE); }
+    catch (e) {
+      const t = document.createElement('textarea');
+      t.value = SITE; document.body.appendChild(t); t.select();
+      document.execCommand('copy'); t.remove();
+    }
+    $('share').textContent = 'Copied! 🎉';
+    setTimeout(() => $('share').textContent = 'Copy link', 1800);
+  });
+  $('open').addEventListener('click', pop);
+
+  /* music: loops, starts on first click, toggle button */
+  const audio = $('audio');
+  audio.volume = 0.4;
+  let started = false, userStopped = false;
+  function setMusicLabel() { $('music').textContent = audio.paused ? '🎵 Music: off' : '🎵 Music: on'; }
+  $('music').addEventListener('click', e => {
+    e.stopPropagation();
+    pop();
+    if (audio.paused) { userStopped = false; audio.play().catch(() => {}); }
+    else { userStopped = true; audio.pause(); }
+    started = true;
+    setTimeout(setMusicLabel, 50);
+  });
+  document.addEventListener('pointerdown', () => {
+    if (!started && !userStopped) {
+      started = true;
+      audio.play().then(setMusicLabel).catch(() => { started = false; });
+    }
+  });
 </script>
 </body>
 </html>
