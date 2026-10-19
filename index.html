@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON DODGE</title>
+<style>
+body{margin:0;background:#090914;color:white;font: bold 20px system-ui;text-align:center}
+h1{color:#a78bfa;text-shadow:0 0 20px #8b5cf6}canvas{background:#111126;border:2px solid #8b5cf6;border-radius:14px;width:min(90vw,400px);height:auto;touch-action:none}
+</style></head>
+<body><h1>NEON DODGE</h1><p>Move ← → or A / D · Avoid red!</p><canvas id="g" width="400" height="500"></canvas><h3 id="s">Score: 0</h3>
+<script>
+let c=g.getContext('2d'),x=180,blocks=[],score=0,keys={};onkeydown=e=>keys[e.key.toLowerCase()]=1;onkeyup=e=>keys[e.key.toLowerCase()]=0;
+function game(){c.clearRect(0,0,400,500);x=Math.max(0,Math.min(370,x+((keys.arrowright||keys.d)?5:0)-((keys.arrowleft||keys.a)?5:0)));
+if(Math.random()<.025)blocks.push({x:Math.random()*370,y:-30});c.fillStyle='#a78bfa';c.shadowBlur=20;c.shadowColor='#a78bfa';c.fillRect(x,440,30,30);c.shadowBlur=0;
+c.fillStyle='#ff3864';for(let b of blocks){b.y+=3+score/100;c.fillRect(b.x,b.y,30,30);if(b.x<x+30&&b.x+30>x&&b.y<470&&b.y+30>440){alert('GAME OVER! Score: '+score);location.reload()}}
+blocks=blocks.filter(b=>b.y<510);score++;s.textContent='Score: '+score;requestAnimationFrame(game)}
+game();
+</script></body></html>
