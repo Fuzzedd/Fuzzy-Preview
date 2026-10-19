@@ -148,6 +148,35 @@
   .big-wobble{animation:bigwobble 1s ease}
   @keyframes bigwobble{20%{transform:rotate(-4deg) scale(1.03)}40%{transform:rotate(4deg) scale(.98)}
     60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
+
+  /* Mobile Responsive Adjustments */
+  @media (max-width: 768px) {
+    header { padding: 16px 20px; justify-content: center; }
+    .brand { gap: 12px; }
+    #logoWrap, #logoWrap img { width: 60px; height: 60px; border-radius: 14px; }
+    .brand span { font-size: 32px; }
+
+    .hero {
+      flex-direction: column;
+      text-align: center;
+      padding: 10px 20px 140px;
+      gap: 32px;
+      justify-content: center;
+      min-height: auto;
+    }
+    .text { max-width: 100%; }
+    .btns { justify-content: center; width: 100%; }
+    .btn { width: 100%; text-align: center; padding: 14px 24px; font-size: 17px; }
+
+    .qrwrap { min-width: unset; width: 100%; }
+    .qr { width: min(260px, 80vw); padding: 14px; margin: 0 auto; }
+
+    #mascot { left: 12px; bottom: 12px; gap: 8px; }
+    #mascotWrap, #mascotWrap img { width: 52px; height: 52px; }
+    #bubble { font-size: 13px; padding: 8px 12px; max-width: 160px; margin-bottom: 6px; }
+
+    #music { right: 12px; bottom: 12px; padding: 10px 16px 10px 12px; font-size: 13px; }
+  }
 </style>
 </head>
 <body>
