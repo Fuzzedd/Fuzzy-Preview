@@ -234,6 +234,19 @@
 
 <audio id="audio" src="melody.mp3" loop autoplay></audio>
 
+<!-- SLITHER.IO GAME MODAL -->
+<div id="gameModal" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(10,17,40,0.95); backdrop-filter:blur(12px); flex-direction:column; align-items:center; justify-content:center;">
+  <div style="position:relative; width:90%; max-width:600px; background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.3); border-radius:24px; padding:20px; display:flex; flex-direction:column; align-items:center; box-shadow:0 20px 50px rgba(43,92,255,0.5);">
+    <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:15px;">
+      <h2 style="font-size:24px; font-weight:900; color:#8ae0ff;">🐍 Fuzzy Slither</h2>
+      <button id="closeGame" style="background:#ff5c5c; color:#fff; border:none; width:36px; height:36px; border-radius:50%; font-size:18px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(255,92,92,0.4);">✕</button>
+    </div>
+    <div style="font-size:16px; font-weight:700; margin-bottom:10px;">Score: <span id="gameScore">0</span></div>
+    <canvas id="gameCanvas" width="540" height="360" style="background:#070d20; border-radius:16px; border:2px solid rgba(255,255,255,0.2); cursor:crosshair; width:100%; max-width:540px; height:auto;"></canvas>
+    <p style="font-size:13px; color:#a9e2ff; margin-top:10px; text-align:center;">Move mouse or touch to steer your fuzzy snake and eat food!</p>
+  </div>
+</div>
+
 <script>
   /* ========================================================= */
   /* SETTING: BACKGROUND BLOB SIZE SCALE                        */
@@ -244,7 +257,7 @@
   document.documentElement.style.setProperty("--blob-scale", BLOB_SIZE_SCALE);
 
   const SITE = "https://fuzzedd.github.io/Fuzzy";
-  const $ = id => document.getElementById(id);
+  const byId = id => document.getElementById(id);
 
   /* Sound debouncer so clicka.mp3 plays only once per tap */
   let lastClickTime = 0;
@@ -257,7 +270,7 @@
   }
 
   /* tiny falling stars */
-  const stars = $("stars");
+  const stars = byId("stars");
   const starCols = ["#ffffff", "#8ae0ff", "#b8ecff", "#4db2ff"];
   for (let i = 0; i < 70; i++) {
     const s = document.createElement("div");
@@ -291,7 +304,7 @@
   const full = "Welcome to\nFuzzy";
   let ti = 0;
   setTimeout(function type() {
-    $("title").innerHTML = full.slice(0, ti).replace("\n", "<br>");
+    byId("title").innerHTML = full.slice(0, ti).replace("\n", "<br>");
     if (ti++ < full.length) setTimeout(type, 110);
   }, 300);
 
@@ -299,30 +312,39 @@
   const lines = ["woohooo :OO", "no cap, it's cool", "you found the fuzzy zone", "stay fuzzy", "certified shii", "fuzzy mode: ON"];
   let li = 0;
   setInterval(() => {
-    const f = $("fun");
+    const f = byId("fun");
     f.style.opacity = 0;
     setTimeout(() => { li = (li + 1) % lines.length; f.textContent = lines[li]; f.style.opacity = 1; }, 400);
   }, 3000);
 
-  /* easter egg: click logo 5 times */
-  let clicks = 0, clickTimer;
-  $("logo").addEventListener("click", () => {
-    clicks++;
-    clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => clicks = 0, 1500);
-    if (clicks >= 5) { clicks = 0; party(); }
+  /* easter egg: 5 clicks for party, 10 clicks under 5 seconds for Slither game */
+  let logoClicks = 0, logoTimer = null, partyClicks = 0, partyTimer = null;
+  byId("logo").addEventListener("click", () => {
+    // Party counter (5 clicks)
+    partyClicks++;
+    clearTimeout(partyTimer);
+    partyTimer = setTimeout(() => partyClicks = 0, 1500);
+    if (partyClicks >= 5) { partyClicks = 0; party(); }
+
+    // Slither Game counter (10 clicks under 5 seconds)
+    logoClicks++;
+    if (logoClicks === 1) {
+      logoTimer = setTimeout(() => logoClicks = 0, 5000);
+    }
+    if (logoClicks >= 10) {
+      clearTimeout(logoTimer);
+      logoClicks = 0;
+      openSlitherGame();
+    }
   });
 
   function party() {
-    /* Play yayy.mp3 sound */
     const yaySound = new Audio("yayy.mp3");
     yaySound.play().catch(() => {});
 
-    /* Big screen wobble */
     document.body.classList.add("big-wobble");
     setTimeout(() => document.body.classList.remove("big-wobble"), 1200);
 
-    /* Floating party banner popup */
     const banner = document.createElement("div");
     banner.className = "party-banner";
     banner.textContent = "🎉 YAYY! FUZZY PARTY! 🎉";
@@ -334,7 +356,6 @@
       {transform: "translate(-50%,-50%) scale(0.5)", opacity: 0}
     ], {duration: 2500, easing: "ease-out"}).onfinish = () => banner.remove();
 
-    /* Massive Confetti Rain (220 pieces) */
     const cols = ["#2b5cff", "#8ae0ff", "#ffffff", "#4db2ff", "#b8ecff", "#ffdd57", "#ff6b6b", "#a064ff"];
     for (let i = 0; i < 220; i++) {
       const c = document.createElement("div");
@@ -355,7 +376,6 @@
       ], {duration: duration, easing: "cubic-bezier(.25,1,.5,1)"}).onfinish = () => c.remove();
     }
 
-    /* Floating Emoji / Star burst */
     const emojis = ["✨", "🎉", "🌟", "🥳", "💙", "⭐", "🎈"];
     for (let i = 0; i < 35; i++) {
       const e = document.createElement("div");
@@ -375,6 +395,112 @@
     }
   }
 
+  /* SLITHER.IO GAME LOGIC */
+  let gameActive = false;
+  let animationFrameId = null;
+  let snake, food, score, mouseX, mouseY;
+  const canvas = byId("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  function openSlitherGame() {
+    playClickSound();
+    byId("gameModal").style.display = "flex";
+    gameActive = true;
+    initGame();
+    runGame();
+  }
+
+  byId("closeGame").addEventListener("click", () => {
+    playClickSound();
+    byId("gameModal").style.display = "none";
+    gameActive = false;
+    cancelAnimationFrame(animationFrameId);
+  });
+
+  canvas.addEventListener("mousemove", e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+
+  canvas.addEventListener("touchmove", e => {
+    const rect = canvas.getBoundingClientRect();
+    if (e.touches.length > 0) {
+      mouseX = e.touches[0].clientX - rect.left;
+      mouseY = e.touches[0].clientY - rect.top;
+    }
+  });
+
+  function initGame() {
+    snake = [
+      {x: 270, y: 180},
+      {x: 255, y: 180},
+      {x: 240, y: 180}
+    ];
+    score = 0;
+    byId("gameScore").textContent = score;
+    mouseX = canvas.width / 2 + 50;
+    mouseY = canvas.height / 2;
+    spawnFood();
+  }
+
+  function spawnFood() {
+    food = {
+      x: Math.random() * (canvas.width - 40) + 20,
+      y: Math.random() * (canvas.height - 40) + 20,
+      color: ["#8ae0ff", "#4db2ff", "#b8ecff", "#2b5cff"][Math.floor(Math.random() * 4)]
+    };
+  }
+
+  function runGame() {
+    if (!gameActive) return;
+
+    const head = snake[0];
+    const angle = Math.atan2(mouseY - head.y, mouseX - head.x);
+    const speed = 2.5;
+    const newX = head.x + Math.cos(angle) * speed;
+    const newY = head.y + Math.sin(angle) * speed;
+
+    const wrappedX = (newX + canvas.width) % canvas.width;
+    const wrappedY = (newY + canvas.height) % canvas.height;
+    const newHead = {x: wrappedX, y: wrappedY};
+
+    const dist = Math.hypot(newHead.x - food.x, newHead.y - food.y);
+    if (dist < 15) {
+      score += 10;
+      byId("gameScore").textContent = score;
+      spawnFood();
+    } else {
+      snake.pop();
+    }
+
+    snake.unshift(newHead);
+
+    ctx.fillStyle = "#070d20";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.arc(food.x, food.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = food.color;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = food.color;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    for (let i = 0; i < snake.length; i++) {
+      const part = snake[i];
+      ctx.beginPath();
+      ctx.arc(part.x, part.y, i === 0 ? 9 : 7, 0, Math.PI * 2);
+      ctx.fillStyle = i === 0 ? "#ffffff" : "#2b5cff";
+      ctx.shadowBlur = i === 0 ? 12 : 5;
+      ctx.shadowColor = "#8ae0ff";
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    animationFrameId = requestAnimationFrame(runGame);
+  }
+
   /* mascot: blinks, click for sequential messages */
   const says = [
     "hi hi!", "woohooo :OO", "you clicked me!", "fuzzy is cool and shii", "stay fuzzy", "boop!",
@@ -387,7 +513,7 @@
     "zoom zoom, fuzzy boom", "today is a good day to be fuzzy"
   ];
   function squish() {
-    $("mascotImg").animate([
+    byId("mascotImg").animate([
       {transform: "scale(1,1)"},
       {transform: "scale(1.15,.8)", offset: .35},
       {transform: "scale(.92,1.12)", offset: .65},
@@ -396,11 +522,11 @@
   }
   setInterval(squish, 4000);
   let bubbleTimer, sayIndex = 0;
-  $("mascotImg").addEventListener("click", () => {
+  byId("mascotImg").addEventListener("click", () => {
     squish();
-    const b = $("bubble");
+    const b = byId("bubble");
     b.classList.remove("show");
-    void b.offsetWidth; // trigger reflow to reset animation
+    void b.offsetWidth;
     b.textContent = says[sayIndex];
     sayIndex = (sayIndex + 1) % says.length;
     b.classList.add("show");
@@ -409,25 +535,25 @@
   });
 
   /* copy link */
-  $("share").addEventListener("click", async () => {
+  byId("share").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(SITE); }
     catch (e) {
       const t = document.createElement("textarea");
       t.value = SITE; document.body.appendChild(t); t.select();
       document.execCommand("copy"); t.remove();
     }
-    $("share").textContent = "Copied! 🎉";
-    setTimeout(() => $("share").textContent = "Copy link", 1800);
+    byId("share").textContent = "Copied! 🎉";
+    setTimeout(() => byId("share").textContent = "Copy link", 1800);
   });
 
   /* music: looped, tries to play right when the page loads */
-  const audio = $("audio");
+  const audio = byId("audio");
   audio.loop = true;
   audio.volume = 0.4;
   let userStopped = false;
   function setLabel() {
-    $("mlabel").textContent = audio.paused ? "Music off" : "Music on";
-    $("music").classList.toggle("off", audio.paused);
+    byId("mlabel").textContent = audio.paused ? "Music off" : "Music on";
+    byId("music").classList.toggle("off", audio.paused);
   }
   audio.addEventListener("play", setLabel);
   audio.addEventListener("pause", setLabel);
@@ -442,7 +568,7 @@
   };
   ["pointerdown", "keydown", "touchstart", "click"].forEach(ev => document.addEventListener(ev, kick));
 
-  $("music").addEventListener("click", e => {
+  byId("music").addEventListener("click", e => {
     e.stopPropagation();
     if (audio.paused) { userStopped = false; audio.play().catch(() => {}); }
     else { userStopped = true; audio.pause(); }
