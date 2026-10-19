@@ -6,6 +6,10 @@
 <title>Fuzzy</title>
 <link rel="icon" type="image/png" href="Fuzzy.png">
 <style>
+  :root {
+    --blob-scale: 1.0; /* Adjusted automatically via BLOB_SIZE_SCALE in JS */
+  }
+
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{min-height:100%}
   body{
@@ -20,12 +24,12 @@
     background:radial-gradient(circle at 50% 50%,#101c44,#070d20 75%)}
   .blob{position:absolute;filter:blur(70px);opacity:.85;will-change:transform,border-radius;
     border-radius:42% 58% 63% 37% / 45% 40% 60% 55%}
-  .l1{width:60vmax;height:60vmax;background:#2b5cff;top:-15vmax;left:-12vmax;animation:flow1 22s ease-in-out infinite,morph 14s ease-in-out infinite}
-  .l2{width:50vmax;height:50vmax;background:#8ae0ff;bottom:-18vmax;right:-10vmax;opacity:.7;animation:flow2 26s ease-in-out infinite,morph 17s ease-in-out infinite reverse}
-  .l3{width:40vmax;height:40vmax;background:#1f4fd0;top:30%;left:35%;animation:flow3 30s ease-in-out infinite,morph 19s ease-in-out infinite}
-  .l4{width:32vmax;height:32vmax;background:#4db2ff;top:-8vmax;right:5vmax;opacity:.6;animation:flow4 24s ease-in-out infinite,morph 15s ease-in-out infinite reverse}
-  .l5{width:36vmax;height:36vmax;background:#1c2540;bottom:5vmax;left:-8vmax;opacity:.95;animation:flow5 28s ease-in-out infinite,morph 21s ease-in-out infinite}
-  .l6{width:26vmax;height:26vmax;background:#b8ecff;top:45%;right:20%;opacity:.45;animation:flow6 20s ease-in-out infinite,morph 13s ease-in-out infinite reverse}
+  .l1{width:calc(60vmax * var(--blob-scale));height:calc(60vmax * var(--blob-scale));background:#2b5cff;top:-15vmax;left:-12vmax;animation:flow1 22s ease-in-out infinite,morph 14s ease-in-out infinite}
+  .l2{width:calc(50vmax * var(--blob-scale));height:calc(50vmax * var(--blob-scale));background:#8ae0ff;bottom:-18vmax;right:-10vmax;opacity:.7;animation:flow2 26s ease-in-out infinite,morph 17s ease-in-out infinite reverse}
+  .l3{width:calc(40vmax * var(--blob-scale));height:calc(40vmax * var(--blob-scale));background:#1f4fd0;top:30%;left:35%;animation:flow3 30s ease-in-out infinite,morph 19s ease-in-out infinite}
+  .l4{width:calc(32vmax * var(--blob-scale));height:calc(32vmax * var(--blob-scale));background:#4db2ff;top:-8vmax;right:5vmax;opacity:.6;animation:flow4 24s ease-in-out infinite,morph 15s ease-in-out infinite reverse}
+  .l5{width:calc(36vmax * var(--blob-scale));height:calc(36vmax * var(--blob-scale));background:#1c2540;bottom:5vmax;left:-8vmax;opacity:.95;animation:flow5 28s ease-in-out infinite,morph 21s ease-in-out infinite}
+  .l6{width:calc(26vmax * var(--blob-scale));height:calc(26vmax * var(--blob-scale));background:#b8ecff;top:45%;right:20%;opacity:.45;animation:flow6 20s ease-in-out infinite,morph 13s ease-in-out infinite reverse}
   @keyframes morph{
     0%,100%{border-radius:42% 58% 63% 37% / 45% 40% 60% 55%}
     25%{border-radius:60% 40% 45% 55% / 55% 60% 40% 45%}
@@ -52,20 +56,19 @@
   .shoot{position:fixed;width:90px;height:2px;z-index:1;pointer-events:none;
     background:linear-gradient(90deg,transparent,#fff);opacity:0}
 
-  /* shared animations: pop uses "scale", wobble uses "translate/rotate",
-     hover uses "transform" so they all blend together smoothly */
+  /* shared animations */
   @keyframes pop{from{scale:.05;opacity:0}to{scale:1;opacity:1}}
   @keyframes wobble{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -6px;rotate:-1.5deg}}
   @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -8px}}
   @keyframes slidedown{from{opacity:0;transform:translateY(-30px)}to{opacity:1;transform:none}}
 
-  /* white glow under logo + mascot */
+  /* white glow under logo + mascot (weaker & softer) */
   .glowwrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
-  .glowwrap::before{content:"";position:absolute;inset:-18%;border-radius:50%;z-index:0;
-    background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(255,255,255,.5) 45%,rgba(255,255,255,0) 72%);
-    filter:blur(6px);animation:glowpulse 3s ease-in-out infinite}
+  .glowwrap::before{content:"";position:absolute;inset:-4%;border-radius:50%;z-index:0;
+    background:radial-gradient(circle,rgba(255,255,255,.22) 0%,rgba(255,255,255,.1) 40%,rgba(255,255,255,0) 65%);
+    filter:blur(4px);animation:glowpulse 3s ease-in-out infinite}
   .glowwrap img{position:relative;z-index:1;display:block}
-  @keyframes glowpulse{0%,100%{opacity:.8;scale:1}50%{opacity:1;scale:1.08}}
+  @keyframes glowpulse{0%,100%{opacity:.3;scale:.95}50%{opacity:.5;scale:1.02}}
 
   header{position:relative;z-index:3;display:flex;align-items:center;padding:20px 32px;animation:slidedown .8s ease both}
   .brand{display:flex;align-items:center;gap:18px}
@@ -120,7 +123,8 @@
   #bubble{background:#fff;color:#0a1128;font-weight:700;font-size:15px;padding:10px 14px;border-radius:14px;
     box-shadow:0 4px 16px rgba(138,224,255,.4);margin-bottom:10px;
     opacity:0;transform:translateY(8px) scale(.9);transition:.4s var(--ease);pointer-events:none;max-width:220px}
-  #bubble.show{opacity:1;transform:none}
+  #bubble.show{opacity:1;transform:none;animation:bubble-pop .4s var(--pop)}
+  @keyframes bubble-pop{0%{transform:translateY(12px) scale(.7);opacity:0}70%{transform:translateY(-2px) scale(1.05)}100%{transform:none;opacity:1}}
 
   /* music button */
   #music{position:fixed;right:20px;bottom:20px;z-index:20;display:flex;align-items:center;gap:12px;
@@ -144,10 +148,16 @@
   @keyframes eq{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
   #music.off .eq i{animation-play-state:paused;transform:scaleY(.2);opacity:.6}
 
-  .conf{position:fixed;top:-20px;width:10px;height:10px;z-index:100;pointer-events:none}
-  .big-wobble{animation:bigwobble 1s ease}
-  @keyframes bigwobble{20%{transform:rotate(-4deg) scale(1.03)}40%{transform:rotate(4deg) scale(.98)}
-    60%{transform:rotate(-3deg)}80%{transform:rotate(2deg)}}
+  .conf{position:fixed;top:-20px;z-index:100;pointer-events:none}
+  .party-emoji{position:fixed;z-index:101;pointer-events:none;font-size:28px;user-select:none}
+  .party-banner{position:fixed;top:15%;left:50%;transform:translate(-50%,-50%) scale(0);
+    z-index:150;background:rgba(255,255,255,.95);color:#0a1128;font-size:clamp(22px,5vw,42px);
+    font-weight:900;padding:16px 36px;border-radius:99px;box-shadow:0 10px 50px rgba(138,224,255,.8);
+    pointer-events:none;text-align:center;letter-spacing:1px}
+
+  .big-wobble{animation:bigwobble 1.2s ease}
+  @keyframes bigwobble{20%{transform:rotate(-6deg) scale(1.05)}40%{transform:rotate(6deg) scale(.95)}
+    60%{transform:rotate(-4deg) scale(1.02)}80%{transform:rotate(3deg)}}
 
   /* Mobile Responsive Adjustments */
   @media (max-width: 768px) {
@@ -225,153 +235,223 @@
 <audio id="audio" src="melody.mp3" loop autoplay></audio>
 
 <script>
-  const SITE = 'https://fuzzedd.github.io/Fuzzy';
+  /* ========================================================= */
+  /* SETTING: BACKGROUND BLOB SIZE SCALE                        */
+  /* Change this value to adjust liquid background blob sizes   */
+  /* Example: 0.5 = 50% size | 1.0 = normal | 1.5 = 150% size  */
+  /* ========================================================= */
+  const BLOB_SIZE_SCALE = 1.0;
+  document.documentElement.style.setProperty("--blob-scale", BLOB_SIZE_SCALE);
+
+  const SITE = "https://fuzzedd.github.io/Fuzzy";
   const $ = id => document.getElementById(id);
 
+  /* Sound debouncer so clicka.mp3 plays only once per tap */
+  let lastClickTime = 0;
+  function playClickSound() {
+    const now = Date.now();
+    if (now - lastClickTime < 100) return;
+    lastClickTime = now;
+    const snd = new Audio("clicka.mp3");
+    snd.play().catch(() => {});
+  }
+
   /* tiny falling stars */
-  const stars = $('stars');
-  const starCols = ['#ffffff', '#8ae0ff', '#b8ecff', '#4db2ff'];
+  const stars = $("stars");
+  const starCols = ["#ffffff", "#8ae0ff", "#b8ecff", "#4db2ff"];
   for (let i = 0; i < 70; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
+    const s = document.createElement("div");
+    s.className = "star";
     const size = (1 + Math.random() * 2) * 1.4;
-    s.style.width = s.style.height = size + 'px';
-    s.style.left = Math.random() * 100 + '%';
+    s.style.width = s.style.height = size + "px";
+    s.style.left = Math.random() * 100 + "%";
     s.style.background = starCols[i % starCols.length];
-    s.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
-    s.style.animationDuration = (5 + Math.random() * 8) + 's';
-    s.style.animationDelay = (-Math.random() * 13) + 's';
+    s.style.setProperty("--dx", (Math.random() * 60 - 30) + "px");
+    s.style.animationDuration = (5 + Math.random() * 8) + "s";
+    s.style.animationDelay = (-Math.random() * 13) + "s";
     stars.appendChild(s);
   }
 
   /* shooting stars */
   function shoot() {
-    const s = document.createElement('div');
-    s.className = 'shoot';
-    s.style.top = (Math.random() * 40) + '%';
-    s.style.left = (30 + Math.random() * 60) + '%';
+    const s = document.createElement("div");
+    s.className = "shoot";
+    s.style.top = (Math.random() * 40) + "%";
+    s.style.left = (30 + Math.random() * 60) + "%";
     document.body.appendChild(s);
     s.animate([
-      {opacity: 1, transform: 'rotate(25deg) translate(0,0)'},
-      {opacity: 0, transform: 'rotate(25deg) translate(-400px,0)'}
-    ], {duration: 1000, easing: 'ease-out'}).onfinish = () => s.remove();
+      {opacity: 1, transform: "rotate(25deg) translate(0,0)"},
+      {opacity: 0, transform: "rotate(25deg) translate(-400px,0)"}
+    ], {duration: 1000, easing: "ease-out"}).onfinish = () => s.remove();
     setTimeout(shoot, 5000 + Math.random() * 7000);
   }
   setTimeout(shoot, 2500);
 
   /* typing headline */
-  const full = 'Welcome to\nFuzzy';
+  const full = "Welcome to\nFuzzy";
   let ti = 0;
   setTimeout(function type() {
-    $('title').innerHTML = full.slice(0, ti).replace('\n', '<br>');
+    $("title").innerHTML = full.slice(0, ti).replace("\n", "<br>");
     if (ti++ < full.length) setTimeout(type, 110);
   }, 300);
 
   /* rotating fun line */
-  const lines = ['woohooo :OO', 'no cap, it\'s cool', 'you found the fuzzy zone', 'stay fuzzy', 'certified shii', 'fuzzy mode: ON'];
+  const lines = ["woohooo :OO", "no cap, it's cool", "you found the fuzzy zone", "stay fuzzy", "certified shii", "fuzzy mode: ON"];
   let li = 0;
   setInterval(() => {
-    const f = $('fun');
+    const f = $("fun");
     f.style.opacity = 0;
     setTimeout(() => { li = (li + 1) % lines.length; f.textContent = lines[li]; f.style.opacity = 1; }, 400);
   }, 3000);
 
   /* easter egg: click logo 5 times */
   let clicks = 0, clickTimer;
-  $('logo').addEventListener('click', () => {
+  $("logo").addEventListener("click", () => {
     clicks++;
     clearTimeout(clickTimer);
     clickTimer = setTimeout(() => clicks = 0, 1500);
     if (clicks >= 5) { clicks = 0; party(); }
   });
+
   function party() {
-    document.body.classList.add('big-wobble');
-    setTimeout(() => document.body.classList.remove('big-wobble'), 1000);
-    const cols = ['#2b5cff', '#8ae0ff', '#ffffff', '#4db2ff', '#b8ecff'];
-    for (let i = 0; i < 80; i++) {
-      const c = document.createElement('div');
-      c.className = 'conf';
-      c.style.left = Math.random() * 100 + 'vw';
+    /* Play yayy.mp3 sound */
+    const yaySound = new Audio("yayy.mp3");
+    yaySound.play().catch(() => {});
+
+    /* Big screen wobble */
+    document.body.classList.add("big-wobble");
+    setTimeout(() => document.body.classList.remove("big-wobble"), 1200);
+
+    /* Floating party banner popup */
+    const banner = document.createElement("div");
+    banner.className = "party-banner";
+    banner.textContent = "🎉 YAYY! FUZZY PARTY! 🎉";
+    document.body.appendChild(banner);
+    banner.animate([
+      {transform: "translate(-50%,-50%) scale(0)", opacity: 0},
+      {transform: "translate(-50%,-50%) scale(1.1)", opacity: 1, offset: 0.2},
+      {transform: "translate(-50%,-50%) scale(1)", opacity: 1, offset: 0.8},
+      {transform: "translate(-50%,-50%) scale(0.5)", opacity: 0}
+    ], {duration: 2500, easing: "ease-out"}).onfinish = () => banner.remove();
+
+    /* Massive Confetti Rain (220 pieces) */
+    const cols = ["#2b5cff", "#8ae0ff", "#ffffff", "#4db2ff", "#b8ecff", "#ffdd57", "#ff6b6b", "#a064ff"];
+    for (let i = 0; i < 220; i++) {
+      const c = document.createElement("div");
+      c.className = "conf";
+      const size = Math.random() * 12 + 6;
+      c.style.width = size + "px";
+      c.style.height = (Math.random() > 0.4 ? size : size * 2) + "px";
+      c.style.borderRadius = Math.random() > 0.5 ? "50%" : "3px";
+      c.style.left = Math.random() * 100 + "vw";
       c.style.background = cols[i % cols.length];
       document.body.appendChild(c);
+      
+      const duration = 1800 + Math.random() * 2200;
+      const xVel = (Math.random() - 0.5) * 300;
       c.animate([
-        {transform: 'translateY(0) rotate(0)', opacity: 1},
-        {transform: 'translateY(105vh) rotate(' + (Math.random() * 720) + 'deg)', opacity: 1}
-      ], {duration: 1800 + Math.random() * 1500, easing: 'ease-in'}).onfinish = () => c.remove();
+        {transform: "translateY(0) translateX(0) rotate(0deg)", opacity: 1},
+        {transform: `translateY(105vh) translateX(${xVel}px) rotate(${Math.random() * 1080}deg)`, opacity: 0.9}
+      ], {duration: duration, easing: "cubic-bezier(.25,1,.5,1)"}).onfinish = () => c.remove();
+    }
+
+    /* Floating Emoji / Star burst */
+    const emojis = ["✨", "🎉", "🌟", "🥳", "💙", "⭐", "🎈"];
+    for (let i = 0; i < 35; i++) {
+      const e = document.createElement("div");
+      e.className = "party-emoji";
+      e.textContent = emojis[i % emojis.length];
+      e.style.left = Math.random() * 90 + 5 + "vw";
+      e.style.top = Math.random() * 40 + 30 + "vh";
+      document.body.appendChild(e);
+
+      const dx = (Math.random() - 0.5) * 200;
+      const dy = -100 - Math.random() * 200;
+      e.animate([
+        {transform: "scale(0) translate(0,0)", opacity: 0},
+        {transform: "scale(1.4) translate(0,-20px)", opacity: 1, offset: 0.3},
+        {transform: `scale(1) translate(${dx}px, ${dy}px)`, opacity: 0}
+      ], {duration: 2000 + Math.random() * 1000, easing: "ease-out"}).onfinish = () => e.remove();
     }
   }
 
-  /* mascot: blinks, click for a random line */
+  /* mascot: blinks, click for sequential messages */
   const says = [
-    'hi hi!', 'woohooo :OO', 'you clicked me!', 'fuzzy is cool and shii', 'stay fuzzy', 'boop!',
-    'ayo what\'s up', 'sheesh, you found me', 'i\'m just a lil fuzzy guy', 'click me again, i dare you',
-    'fuzzy gang rise up', 'no thoughts, just fuzz', 'you look great today', 'did you hear the melody?',
-    'this site is lowkey fire', 'psst... click the logo 5 times', 'i live here now', 'certified fuzzy moment',
-    'go on, hit that Open Fuzzy button', 'stay hydrated, fuzzy friend', 'bro really clicked a mascot',
-    'it\'s fuzzy o\'clock', 'vibes: immaculate', 'i\'m not a bug, i\'m a feature', 'woah, easy there',
-    'fuzzy level: over 9000', 'tell your friends about fuzzy', 'you\'re my favourite visitor', 'ok that\'s enough clicking... jk keep going',
-    'zoom zoom, fuzzy boom', 'today is a good day to be fuzzy'
+    "hi hi!", "woohooo :OO", "you clicked me!", "fuzzy is cool and shii", "stay fuzzy", "boop!",
+    "ayo what's up", "sheesh, you found me", "i'm just a lil fuzzy guy", "click me again, i dare you",
+    "fuzzy gang rise up", "no thoughts, just fuzz", "you look great today", "did you hear the melody?",
+    "this site is lowkey fire", "psst... click the logo 5 times", "i live here now", "certified fuzzy moment",
+    "go on, hit that Open Fuzzy button", "stay hydrated, fuzzy friend", "bro really clicked a mascot",
+    "it's fuzzy o'clock", "vibes: immaculate", "i'm not a bug, i'm a feature", "woah, easy there",
+    "fuzzy level: over 9000", "tell your friends about fuzzy", "you're my favourite visitor", "ok that's enough clicking... jk keep going",
+    "zoom zoom, fuzzy boom", "today is a good day to be fuzzy"
   ];
   function squish() {
-    $('mascotImg').animate([
-      {transform: 'scale(1,1)'},
-      {transform: 'scale(1.15,.8)', offset: .35},
-      {transform: 'scale(.92,1.12)', offset: .65},
-      {transform: 'scale(1,1)'}
-    ], {duration: 500, easing: 'ease-out'});
+    $("mascotImg").animate([
+      {transform: "scale(1,1)"},
+      {transform: "scale(1.15,.8)", offset: .35},
+      {transform: "scale(.92,1.12)", offset: .65},
+      {transform: "scale(1,1)"}
+    ], {duration: 500, easing: "ease-out"});
   }
   setInterval(squish, 4000);
-  let bubbleTimer, lastSay = -1;
-  $('mascotImg').addEventListener('click', () => {
+  let bubbleTimer, sayIndex = 0;
+  $("mascotImg").addEventListener("click", () => {
     squish();
-    const b = $('bubble');
-    let n;
-    do { n = Math.floor(Math.random() * says.length); } while (n === lastSay);
-    lastSay = n;
-    b.textContent = says[n];
-    b.classList.add('show');
+    const b = $("bubble");
+    b.classList.remove("show");
+    void b.offsetWidth; // trigger reflow to reset animation
+    b.textContent = says[sayIndex];
+    sayIndex = (sayIndex + 1) % says.length;
+    b.classList.add("show");
     clearTimeout(bubbleTimer);
-    bubbleTimer = setTimeout(() => b.classList.remove('show'), 2400);
+    bubbleTimer = setTimeout(() => b.classList.remove("show"), 2400);
   });
 
   /* copy link */
-  $('share').addEventListener('click', async () => {
+  $("share").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(SITE); }
     catch (e) {
-      const t = document.createElement('textarea');
+      const t = document.createElement("textarea");
       t.value = SITE; document.body.appendChild(t); t.select();
-      document.execCommand('copy'); t.remove();
+      document.execCommand("copy"); t.remove();
     }
-    $('share').textContent = 'Copied! 🎉';
-    setTimeout(() => $('share').textContent = 'Copy link', 1800);
+    $("share").textContent = "Copied! 🎉";
+    setTimeout(() => $("share").textContent = "Copy link", 1800);
   });
 
   /* music: looped, tries to play right when the page loads */
-  const audio = $('audio');
+  const audio = $("audio");
   audio.loop = true;
   audio.volume = 0.4;
   let userStopped = false;
   function setLabel() {
-    $('mlabel').textContent = audio.paused ? 'Music off' : 'Music on';
-    $('music').classList.toggle('off', audio.paused);
+    $("mlabel").textContent = audio.paused ? "Music off" : "Music on";
+    $("music").classList.toggle("off", audio.paused);
   }
-  audio.addEventListener('play', setLabel);
-  audio.addEventListener('pause', setLabel);
+  audio.addEventListener("play", setLabel);
+  audio.addEventListener("pause", setLabel);
 
   audio.play().catch(() => { setLabel(); });
 
   const kick = () => {
     if (userStopped) return;
     audio.play().then(() => {
-      ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(ev => document.removeEventListener(ev, kick));
+      ["pointerdown", "keydown", "touchstart", "click"].forEach(ev => document.removeEventListener(ev, kick));
     }).catch(() => {});
   };
-  ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(ev => document.addEventListener(ev, kick));
+  ["pointerdown", "keydown", "touchstart", "click"].forEach(ev => document.addEventListener(ev, kick));
 
-  $('music').addEventListener('click', e => {
+  $("music").addEventListener("click", e => {
     e.stopPropagation();
     if (audio.paused) { userStopped = false; audio.play().catch(() => {}); }
     else { userStopped = true; audio.pause(); }
+  });
+
+  /* Attach clicka.mp3 sound to ALL interactive elements */
+  const interactiveElements = document.querySelectorAll("button, a, .btn, #logo, #mascotImg, #logoWrap, #mascotWrap");
+  interactiveElements.forEach(el => {
+    el.addEventListener("pointerdown", playClickSound);
   });
 </script>
 </body>
